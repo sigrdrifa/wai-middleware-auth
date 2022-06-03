@@ -9,6 +9,7 @@ import           Control.Exception.Safe               (catchAny)
 import           Data.Maybe                           (fromMaybe)
 import           Data.Aeson
 import qualified Data.ByteString                      as S
+import           Data.ByteString.UTF8                 as BSU
 import           Data.Proxy                           (Proxy (..))
 import qualified Data.Text                            as T
 import           Data.Text.Encoding                   (encodeUtf8)
@@ -92,7 +93,7 @@ newtype GithubEmail = GithubEmail { githubEmail :: S.ByteString } deriving Show
 
 instance FromJSON GithubEmail where
   parseJSON = withObject "Github Verified Email" $ \ obj -> do
-    True <- obj .: "verified"
+    True  <- obj .: "verified"
     email <- obj .: "email"
     return (GithubEmail $ encodeUtf8 email)
 
@@ -134,5 +135,5 @@ instance AuthProvider Github where
                     onFailure status403 $
                     "No valid email was found with permission to access this resource. " <>
                     "Please contact the administrator.")
-            (\_err -> onFailure status501 "Issue communicating with github")
+            (\_err -> onFailure status501 $ "Issue communicating with github: " <> (BSU.fromString $ show _err))
     handleLogin githubOAuth2 req suffix renderUrl onOAuth2Success onFailure

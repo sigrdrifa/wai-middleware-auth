@@ -55,6 +55,7 @@ library
                      , unix-compat
                      , unordered-containers
                      , uri-bytestring
+                     , utf8-string
                      , vault
                      , wai                  >= 3.0 && < 4
                      , wai-app-static
